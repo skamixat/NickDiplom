@@ -6,4 +6,6 @@ module org.nikita.armaplus2 {
 
     opens org.nikita.armaplus2 to javafx.fxml;
     exports org.nikita.armaplus2;
+    exports org.nikita.armaplus2.controllers;
+    opens org.nikita.armaplus2.controllers to javafx.fxml;
 }

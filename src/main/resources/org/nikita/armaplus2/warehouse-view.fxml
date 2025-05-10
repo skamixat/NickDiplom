@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="400.0" prefWidth="600.0" spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nikita.armaplus2.controllers.WarehouseController">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+    <TabPane tabClosingPolicy="UNAVAILABLE">
+        <Tab text="Сырье">
+            <VBox spacing="10.0">
+                <padding>
+                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                </padding>
+                <TableView fx:id="rawMaterialsTable" prefHeight="300.0" prefWidth="580.0">
+                    <columns>
+                        <TableColumn fx:id="rawMaterialIdColumn" prefWidth="50.0" text="ID"/>
+                        <TableColumn fx:id="tonsPurchasedColumn" prefWidth="120.0" text="Тонн закуплено"/>
+                        <TableColumn fx:id="purchaseAmountColumn" prefWidth="120.0" text="Сумма закупки"/>
+                        <TableColumn fx:id="logisticsCostRawColumn" prefWidth="120.0" text="Сумма на логистику"/>
+                        <TableColumn fx:id="purchaseDateColumn" prefWidth="100.0" text="Дата покупки"/>
+                        <TableColumn fx:id="expenseTypeRawColumn" prefWidth="150.0" text="Тип расхода"/>
+                    </columns>
+                </TableView>
+                <HBox spacing="10.0">
+                    <Button fx:id="addRawMaterialButton" onAction="#handleAddRawMaterial" text="Добавить"/>
+                </HBox>
+            </VBox>
+        </Tab>
+        <Tab text="Готовый товар">
+            <VBox spacing="10.0">
+                <padding>
+                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                </padding>
+                <TableView fx:id="finishedProductsTable" prefHeight="300.0" prefWidth="580.0">
+                    <columns>
+                        <TableColumn fx:id="finishedProductIdColumn" prefWidth="50.0" text="ID"/>
+                        <TableColumn fx:id="tonsProducedColumn" prefWidth="150.0" text="Тонн произведено"/>
+                        <TableColumn fx:id="soldAmountColumn" prefWidth="150.0" text="Продано на сумму"/>
+                        <TableColumn fx:id="logisticsCostFinishedColumn" prefWidth="150.0" text="Затраты на логистику"/>
+                        <TableColumn fx:id="incomeTypeColumn" prefWidth="150.0" text="Тип дохода"/>
+                    </columns>
+                </TableView>
+                <HBox spacing="10.0">
+                    <Button fx:id="addFinishedProductButton" onAction="#handleAddFinishedProduct" text="Добавить"/>
+                </HBox>
+            </VBox>
+        </Tab>
+    </TabPane>
+    <Button fx:id="backButton" onAction="#handleBackButton" text="Назад"/>
+</VBox>
