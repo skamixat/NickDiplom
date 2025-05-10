@@ -72,6 +72,8 @@ public class AccountantController {
 
     @FXML
     public void initialize() {
+        System.out.println("AccountantController initialized."); // Отладка
+
         // Инициализация таблицы сотрудников
         employeeIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
@@ -81,6 +83,7 @@ public class AccountantController {
         hireDateColumn.setCellValueFactory(new PropertyValueFactory<>("hireDate"));
         loadEmployees();
         employeesTable.setItems(employeeList);
+        System.out.println("Employee table items set. Size: " + employeesTable.getItems().size()); // Отладка
 
         // Инициализация таблицы зарплат
         salaryIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -90,32 +93,38 @@ public class AccountantController {
         expenseTypeSalaryColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getExpenseTypeName()));
         loadSalaries();
         salariesTable.setItems(salaryList);
+        System.out.println("Salary table items set. Size: " + salariesTable.getItems().size()); // Отладка
     }
 
     private void loadEmployees() {
+        System.out.println("loadEmployees() called."); // Отладка
         employeeList.clear();
+        System.out.println("employeeList cleared. Size: " + employeeList.size()); // Отладка
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
+        DatabaseHandler localDatabaseHandler = new DatabaseHandler(); // Локальный экземпляр
         try {
-            connection = databaseHandler.getConnection();
+            connection = localDatabaseHandler.getConnection(); // Получаем новое соединение
             String query = "SELECT * FROM employees";
             statement = connection.createStatement();
             resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
-                employeeList.add(new Employee(
+                Employee employee = new Employee(
                         resultSet.getInt("id"),
                         resultSet.getString("first_name"),
                         resultSet.getString("last_name"),
                         resultSet.getString("phone_number"),
                         resultSet.getString("position"),
                         LocalDate.parse(resultSet.getString("hire_date"))
-                ));
+                );
+                employeeList.add(employee);
+                System.out.println("Employee added to list: ID=" + employee.getId() + ", Name=" + employee.getFirstName() + " " + employee.getLastName() + ". List size: " + employeeList.size()); // Отладка
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            databaseHandler.closeConnection(connection);
+            localDatabaseHandler.closeConnection(connection); // Закрываем локальное соединение
             try {
                 if (statement != null) statement.close();
                 if (resultSet != null) resultSet.close();
@@ -123,43 +132,51 @@ public class AccountantController {
                 e.printStackTrace();
             }
         }
+        System.out.println("loadEmployees() finished. List size: " + employeeList.size()); // Отладка
     }
 
     private void loadSalaries() {
+        System.out.println("loadSalaries() called."); // Отладка
         salaryList.clear();
+        System.out.println("salaryList cleared. Size: " + salaryList.size()); // Отладка
         Connection connection = null;
-        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
+        DatabaseHandler localDatabaseHandler = new DatabaseHandler(); // Локальный экземпляр
         try {
-            connection = databaseHandler.getConnection();
+            connection = localDatabaseHandler.getConnection(); // Получаем новое соединение каждый раз
             String query = "SELECT s.id, e.last_name, s.amount, s.payment_date, et.type_name " +
                     "FROM salaries s " +
                     "JOIN employees e ON s.employee_id = e.id " +
                     "JOIN expense_types et ON s.expense_type_id = et.id";
-            preparedStatement = connection.prepareStatement(query);
-            resultSet = preparedStatement.executeQuery(query);
-            while (resultSet.next()) {
-                salaryList.add(new Salary(
-                        resultSet.getInt("id"),
-                        0, // employeeId пока не нужен для отображения
-                        resultSet.getString("last_name"),
-                        resultSet.getDouble("amount"),
-                        LocalDate.parse(resultSet.getString("payment_date")),
-                        0, // expenseTypeId пока не нужен для отображения
-                        resultSet.getString("type_name")
-                ));
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) { // Создаем PreparedStatement внутри try-with-resources
+                resultSet = preparedStatement.executeQuery(); // Выполняем запрос
+                while (resultSet.next()) {
+                    Salary salary = new Salary(
+                            resultSet.getInt("id"),
+                            0, // employeeId пока не нужен для отображения
+                            resultSet.getString("last_name"),
+                            resultSet.getDouble("amount"),
+                            LocalDate.parse(resultSet.getString("payment_date")),
+                            0, // expenseTypeId пока не нужен для отображения
+                            resultSet.getString("type_name")
+                    );
+                    salaryList.add(salary);
+                    System.out.println("Salary added to list: ID=" + salary.getId() + ", Employee=" + salary.getEmployeeLastName() + ", Amount=" + salary.getAmount() + ". List size: " + salaryList.size()); // Отладка
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            databaseHandler.closeConnection(connection);
+            localDatabaseHandler.closeConnection(connection); // Закрываем локальное соединение
             try {
-                if (preparedStatement != null) preparedStatement.close();
                 if (resultSet != null) resultSet.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+        System.out.println("loadSalaries() finished. List size: " + salaryList.size()); // Отладка
     }
 
     @FXML
@@ -219,7 +236,7 @@ public class AccountantController {
         result.ifPresent(employee -> {
             if (employee.getHireDate() != null) {
                 addEmployeeToDatabase(employee);
-                loadEmployees();
+                loadEmployees(); // Вызываем loadEmployees после добавления
             } else {
                 showAlert("Ошибка", "Необходимо выбрать дату найма.");
             }
@@ -239,6 +256,7 @@ public class AccountantController {
             preparedStatement.setString(4, employee.getPosition());
             preparedStatement.setString(5, employee.getHireDate().toString());
             preparedStatement.executeUpdate();
+            loadEmployees(); // Вызываем loadEmployees после успешного добавления
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert("Ошибка базы данных", "Не удалось добавить сотрудника.");
@@ -266,7 +284,7 @@ public class AccountantController {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             deleteEmployeeFromDatabase(selectedEmployee.getId());
-            loadEmployees();
+            loadEmployees(); // Вызываем loadEmployees после удаления
         }
     }
 
@@ -279,6 +297,7 @@ public class AccountantController {
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, employeeId);
             preparedStatement.executeUpdate();
+            loadEmployees(); // Вызываем loadEmployees после удаления
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert("Ошибка базы данных", "Не удалось удалить сотрудника.");
@@ -348,7 +367,7 @@ public class AccountantController {
         result.ifPresent(salary -> {
             if (salary.getPaymentDate() != null) {
                 addSalaryToDatabase(salary);
-                loadSalaries();
+                loadSalaries(); // Вызываем loadSalaries после добавления зарплаты
             }
         });
     }
@@ -415,8 +434,9 @@ public class AccountantController {
     private void addIncomeExpenseRecord(String type, LocalDate date, String expenseTypeName, double amount) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
+        DatabaseHandler localDatabaseHandler = new DatabaseHandler(); // Создаем локальный экземпляр
         try {
-            connection = databaseHandler.getConnection();
+            connection = localDatabaseHandler.getConnection(); // Получаем новое соединение
             String query = "INSERT INTO income_expenses (type, date, expense_type_id, amount) " +
                     "VALUES (?, ?, (SELECT id FROM expense_types WHERE type_name = ?), ?)";
             preparedStatement = connection.prepareStatement(query);
@@ -429,7 +449,7 @@ public class AccountantController {
             e.printStackTrace();
             showAlert("Ошибка базы данных", "Не удалось добавить запись в доходы/расходы.");
         } finally {
-            databaseHandler.closeConnection(connection);
+            localDatabaseHandler.closeConnection(connection); // Закрываем локальное соединение
             try {
                 if (preparedStatement != null) preparedStatement.close();
             } catch (SQLException e) {
@@ -437,6 +457,8 @@ public class AccountantController {
             }
         }
     }
+
+
 
     @FXML
     protected void handleBackButton() {

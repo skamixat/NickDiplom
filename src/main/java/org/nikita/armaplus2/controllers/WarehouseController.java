@@ -128,35 +128,37 @@ public class WarehouseController {
     private void loadFinishedProducts() {
         finishedProductList.clear();
         Connection connection = null;
-        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
+        DatabaseHandler localDatabaseHandler = new DatabaseHandler(); // Локальный экземпляр
         try {
-            connection = databaseHandler.getConnection();
+            connection = localDatabaseHandler.getConnection(); // Получаем новое соединение
             String query = "SELECT fp.id, fp.tons_produced, fp.sold_amount, fp.logistics_cost, inc_et.type_name AS income_type, exp_et.type_name AS expense_type " +
                     "FROM finished_products fp " +
                     "JOIN expense_types inc_et ON fp.income_type_id = inc_et.id " +
                     "JOIN expense_types exp_et ON fp.expense_type_id = exp_et.id";
-            preparedStatement = connection.prepareStatement(query);
-            resultSet = preparedStatement.executeQuery(query);
-            while (resultSet.next()) {
-                finishedProductList.add(new FinishedProduct(
-                        resultSet.getInt("id"),
-                        resultSet.getDouble("tons_produced"),
-                        resultSet.getDouble("sold_amount"),
-                        resultSet.getDouble("logistics_cost"),
-                        0, // incomeTypeId не нужен для отображения
-                        resultSet.getString("income_type"),
-                        0, // expenseTypeId не нужен для отображения
-                        resultSet.getString("expense_type")
-                ));
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    finishedProductList.add(new FinishedProduct(
+                            resultSet.getInt("id"),
+                            resultSet.getDouble("tons_produced"),
+                            resultSet.getDouble("sold_amount"),
+                            resultSet.getDouble("logistics_cost"),
+                            0, // incomeTypeId не нужен для отображения
+                            resultSet.getString("income_type"),
+                            0, // expenseTypeId не нужен для отображения
+                            resultSet.getString("expense_type")
+                    ));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showAlert("Ошибка базы данных", "Не удалось загрузить данные о готовой продукции.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            showAlert("Ошибка базы данных", "Не удалось загрузить данные о готовой продукции.");
         } finally {
-            databaseHandler.closeConnection(connection);
+            localDatabaseHandler.closeConnection(connection);
             try {
-                if (preparedStatement != null) preparedStatement.close();
                 if (resultSet != null) resultSet.close();
             } catch (SQLException e) {
                 e.printStackTrace();
