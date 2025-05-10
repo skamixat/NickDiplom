@@ -1,8 +1,8 @@
-package org.nikita.armaplus2.controllers;
+package org.nikita.armaplus.controllers;
 
-import org.nikita.armaplus2.MainApplication;
-import org.nikita.armaplus2.database.DatabaseHandler;
-import org.nikita.armaplus2.utils.PasswordManager;
+import org.nikita.armaplus.MainApplication;
+import org.nikita.armaplus.database.DatabaseHandler;
+import org.nikita.armaplus.utils.PasswordManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

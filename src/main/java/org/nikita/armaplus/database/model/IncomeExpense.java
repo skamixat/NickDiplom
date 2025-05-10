@@ -1,4 +1,4 @@
-package org.nikita.armaplus2.database.model;
+package org.nikita.armaplus.database.model;
 
 
 import java.time.LocalDate;

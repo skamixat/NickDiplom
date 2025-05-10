@@ -1,4 +1,4 @@
-package org.nikita.armaplus2.database;
+package org.nikita.armaplus.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

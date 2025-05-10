@@ -1,6 +1,6 @@
-package org.nikita.armaplus2.utils;
+package org.nikita.armaplus.utils;
 
-import org.nikita.armaplus2.database.DatabaseHandler;
+import org.nikita.armaplus.database.DatabaseHandler;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

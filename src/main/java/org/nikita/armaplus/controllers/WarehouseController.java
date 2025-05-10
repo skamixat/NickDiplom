@@ -1,11 +1,10 @@
-package org.nikita.armaplus2.controllers;
+package org.nikita.armaplus.controllers;
 
 
-import org.nikita.armaplus2.MainApplication;
-import org.nikita.armaplus2.database.DatabaseHandler;
-import org.nikita.armaplus2.database.model.FinishedProduct;
-import org.nikita.armaplus2.database.model.RawMaterial;
-import javafx.beans.property.SimpleStringProperty;
+import org.nikita.armaplus.MainApplication;
+import org.nikita.armaplus.database.DatabaseHandler;
+import org.nikita.armaplus.database.model.FinishedProduct;
+import org.nikita.armaplus.database.model.RawMaterial;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;

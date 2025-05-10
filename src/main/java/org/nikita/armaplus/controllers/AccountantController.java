@@ -1,9 +1,9 @@
-package org.nikita.armaplus2.controllers;
+package org.nikita.armaplus.controllers;
 
-import org.nikita.armaplus2.MainApplication;
-import org.nikita.armaplus2.database.DatabaseHandler;
-import org.nikita.armaplus2.database.model.Employee;
-import org.nikita.armaplus2.database.model.Salary;
+import org.nikita.armaplus.MainApplication;
+import org.nikita.armaplus.database.DatabaseHandler;
+import org.nikita.armaplus.database.model.Employee;
+import org.nikita.armaplus.database.model.Salary;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,7 +13,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;

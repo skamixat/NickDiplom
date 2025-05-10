@@ -1,4 +1,4 @@
-package org.nikita.armaplus2;
+package org.nikita.armaplus;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
